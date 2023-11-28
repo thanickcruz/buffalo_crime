@@ -18,7 +18,7 @@ train <- sample(1:nrow(Iris), nrow(Iris)/2)
 test <- -(train)
 Class.test <- Class[test]
 Iris.test <- Iris[test, ]
-lda.fit <- lda(Class ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, data = Iris)
+lda.fit <- lda(Class ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, data = Iris, subset = train)
 lda.pred <- predict(lda.fit, Iris.test)
 lda.class <- lda.pred$class
 table(lda.class, Class.test)
