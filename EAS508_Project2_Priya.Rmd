@@ -11,7 +11,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 
 ```{r}
-iris_data = read.csv("/Users/priyapatil/R_Work/bezdekIris.csv")
+iris_data = read.csv("bezdekIris.csv")
 View(iris_data)
 ```
 
