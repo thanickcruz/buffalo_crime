@@ -1,0 +1,249 @@
+---
+title: "EAS508 Project 2 MERGED"
+author: "Nicholas Cruz"
+date: "2023-11-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+install.packages(c('randomForest', 'caret', 'class'))
+
+library(class)
+library(caret)
+library(randomForest)
+library(MASS)
+
+# load data from CSV
+Iris <- read.csv("bezedekIris.csv")
+View(Iris)
+attach(Iris)
+```
+
+## LDA
+
+```{r}
+set.seed(1)
+k = 10
+cv.error <- rep(0, k)
+splits <- createFolds(Class, returnTrain = FALSE)
+for(i in 1:k) {
+  #Split into train and test
+  test <- splits[[i]]
+  train <- -(test)
+  Iris.test <- Iris[test, ]
+  Class.test <- Class[test]
+  
+  #Train model
+  lda.fit <- lda(Class ~ ., data = Iris, subset = train)
+  
+  #Test model
+  lda.pred <- predict(lda.fit, Iris.test)
+  lda.class <- lda.pred$class
+  cv.error[i] <- mean(lda.class != Class.test)
+}
+cv.error
+mean(cv.error)
+
+lda.fit <- lda(Class ~ ., data = Iris)
+lda.fit
+```
+
+## QDA
+
+```{r}
+set.seed(1)
+k = 10
+cv.error <- rep(0, k)
+splits <- createFolds(Class, returnTrain = FALSE)
+for(i in 1:k) {
+  #Split into train and test
+  test <- splits[[i]]
+  train <- -(test)
+  Iris.test <- Iris[test, ]
+  Class.test <- Class[test]
+  
+  #Train model
+  qda.fit <- qda(Class ~ ., data = Iris, subset = train)
+  
+  #Test model
+  qda.pred <- predict(qda.fit, Iris.test)
+  qda.class <- qda.pred$class
+  cv.error[i] <- mean(qda.class != Class.test)
+}
+cv.error
+mean(cv.error)
+
+qda.fit <- qda(Class ~ ., data = Iris)
+qda.fit
+```
+
+## KNN
+
+```{r}
+#### FITTING A KNN CLASSIFIER MODEL FOR DIFFERENT VALUES OF K TO FIND THE BEST K WITH LEAST MISCLASSIFICATION RATE
+set.seed(300)
+train_indices = sample(1:nrow(iris_data), 0.8 * nrow(iris_data))
+train_data=iris_data[train_indices, ]
+test_data=iris_data[-train_indices, ]
+predictors=names(train_data)[1:4]
+response="Class"
+correct_classification=numeric()
+misclassification_rates=numeric()
+for (k_value in 1:10) {
+  knn_predictions=knn(train = train_data[, predictors], test = test_data[, predictors], cl = train_data[, response], k = k_value)
+  confusion_matrix=table(Actual = test_data[, response], Predicted = knn_predictions)
+  correct_classification=sum(diag(confusion_matrix)) / sum(confusion_matrix)
+  misclassification_rate=1 - correct_classification
+  misclassification_rates=c(misclassification_rates, misclassification_rate)
+  print(k_value)
+  print(confusion_matrix)
+  }
+print(misclassification_rates)
+plot(1:10, misclassification_rates, type = "b", xlab = "K",pch=16,col="red", ylab = "Misclassification Rate", main = "Misclassification rate for k values")
+### After fitting the knn model on different k it is observed that 1,3,4,8,9,10 gives the minimum misclassification rate. So the knn model with k =3 can be choosen for further validation
+```
+
+```{r}
+### APPLYING 10 FOLD CROSS VALIDATION FOR TESTING THE MODEL PREDICTIONS
+set.seed(123)
+attach(iris_data)
+predictors = names(iris_data)[1:4]
+response = "Class"
+irirs_data_2 = iris_data[,c(predictors,response),drop=FALSE]
+k_folds = 10
+folds = createFolds(irirs_data_2$Class,k=k_folds,list=TRUE,returnTrain = FALSE)
+missclassification_rates = numeric()
+for (fold_ind in folds){
+  fold = unlist(fold_ind)
+  train_data = irirs_data_2[-fold,]
+  test_data = irirs_data_2[fold,]
+  knn_predictions = knn(train = train_data[,predictors],test=test_data[,predictors],cl=train_data[,response],k=3)
+  confusion_matrix = table(Actual=test_data[,response],Predicted=knn_predictions)
+  correct_classification = sum(diag(confusion_matrix))/sum(confusion_matrix)
+  missclassification_rate = 1-correct_classification
+  missclassification_rates = c(missclassification_rates,missclassification_rate)
+}
+print(missclassification_rates)
+plot(1:10, missclassification_rates, type = "b",pch =16,col="red", xlab = "K", ylab = "Misclassification Rate", main = "Misclassification rate for k folds")
+average_missclassification = mean(missclassification_rates)
+print(average_missclassification)
+### After applying the k fold cross validation the average misclassification rate shows up to be 0.04
+```
+
+## Random Forest
+
+```{r}
+Iris$Class <- as.factor(Iris$Class)
+```
+
+```{r}
+set.seed(1)
+k=10
+mis.errors.50=rep(k)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
+
+for (i in 1:k){
+  # split into train/test
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
+  
+  # train model
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=50) 
+  
+  # predict on test and get error from confusion matrix
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
+  mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
+  
+  mis.errors.50[i]=mis.error
+}
+
+mean(mis.errors.50)
+```
+
+```{r}
+set.seed(1)
+k=10
+mis.errors.100=rep(k)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
+
+for (i in 1:k){
+  # split into train/test
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
+  
+  # train model
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=100) 
+  
+  # predict on test and get error from confusion matrix
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
+  mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
+  
+  mis.errors.100[i]=mis.error
+}
+
+mean(mis.errors.100)
+```
+
+```{r}
+set.seed(1)
+k=10
+mis.errors.500=rep(k)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
+
+for (i in 1:k){
+  # split into train/test
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
+  
+  # train model
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=500) 
+  
+  # predict on test and get error from confusion matrix
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
+  mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
+  
+  mis.errors.500[i]=mis.error
+}
+
+mean(mis.errors.500)
+```
+
+```{r}
+set.seed(1)
+k=10
+mis.errors.1000=rep(k)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
+
+for (i in 1:k){
+  # split into train/test
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
+  
+  # train model
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=1000) 
+  
+  # predict on test and get error from confusion matrix
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
+  mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
+  
+  mis.errors.1000[i]=mis.error
+}
+
+mean(mis.errors.1000)
+```
+
+```{r}
+ave.errors=c(mean(mis.errors.50),mean(mis.errors.100),mean(mis.errors.500),mean(mis.errors.1000))
+
+plot(c(50,100,500,1000),ave.errors, xlab = 'n trees', ylab='Average Error Rate', type='b')
+
+title('Amount of Trees vs Error Rate')
+```
