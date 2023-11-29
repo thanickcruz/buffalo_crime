@@ -19,6 +19,7 @@ library(MASS)
 
 # load data from CSV
 Iris <- read.csv("bezedekIris.csv")
+iris_data <- Iris
 View(Iris)
 attach(Iris)
 ```
