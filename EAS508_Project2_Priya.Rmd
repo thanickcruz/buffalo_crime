@@ -1,0 +1,71 @@
+---
+title: "project2"
+output: html_document
+date: "2023-11-29"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+
+
+```{r}
+iris_data = read.csv("bezedekIris.csv")
+View(iris_data)
+```
+
+```{r}
+library(class)
+library(caret)
+```
+
+```{r}
+#### FITTING A KNN CLASSIFIER MODEL FOR DIFFERENT VALUES OF K TO FIND THE BEST K WITH LEAST MISCLASSIFICATION RATE
+set.seed(123)
+train_indices = sample(1:nrow(iris_data), 0.8 * nrow(iris_data))
+train_data=iris_data[train_indices, ]
+test_data=iris_data[-train_indices, ]
+predictors=names(train_data)[1:4]
+response="Class"
+accuracies=numeric()
+misclassification_rates=numeric()
+for (k_value in 1:10) {
+  knn_predictions=knn(train = train_data[, predictors], test = test_data[, predictors], cl = train_data[, response], k = k_value)
+  confusion_matrix=table(Actual = test_data[, response], Predicted = knn_predictions)
+  correct_classification=sum(diag(confusion_matrix)) / sum(confusion_matrix)
+  misclassification_rate=1 - correct_classification
+  misclassification_rates=c(misclassification_rates, misclassification_rate)
+  print(k_value)
+  print(confusion_matrix)
+  }
+print(misclassification_rates)
+plot(1:10, misclassification_rates, type = "b", xlab = "K", ylab = "Misclassification Rate", main = "Misclassification rate for k values")
+```
+
+```{r}
+### APPLYING 10 FOLD CROSS VALIDATION FOR TESTING THE MODEL PREDICTIONS
+set.seed(123)
+attach(iris_data)
+predictors = names(iris_data)[1:4]
+response = "Class"
+irirs_data_2 = iris_data[,c(predictors,response),drop=FALSE]
+k_folds = 10
+folds = createFolds(irirs_data_2$Iris.setosa,k=k_folds,list=TRUE,returnTrain = FALSE)
+missclassification_rates = numeric()
+for (fold_ind in folds){
+  fold = unlist(fold_ind)
+  train_data = irirs_data_2[-fold,]
+  test_data = irirs_data_2[fold,]
+  knn_predictions = knn(train = train_data[,predictors],test=test_data[,predictors],cl=train_data[,response],k=3)
+  confusion_matrix = table(Actual=test_data[,response],Predicted=knn_predictions)
+  correct_classification = sum(diag(confusion_matrix))/sum(confusion_matrix)
+  missclassification_rate = 1-correct_classification
+  missclassification_rates = c(missclassification_rates,missclassification_rate)
+}
+print(missclassification_rates)
+plot(1:10, missclassification_rates, type = "b", xlab = "K", ylab = "Misclassification Rate", main = "Misclassification rate for k folds")
+average_missclassification = mean(missclassification_rates)
+print(average_missclassification)
+```
+
