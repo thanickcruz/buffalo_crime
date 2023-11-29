@@ -44,7 +44,7 @@ plot(1:10, misclassification_rates, type = "b", xlab = "K", ylab = "Misclassific
 ```
 
 ```{r}
-### APPLYING 5 FOLD CROSS VALIDATION FOR TESTING THE MODEL PREDICTIONS
+### APPLYING 10 FOLD CROSS VALIDATION FOR TESTING THE MODEL PREDICTIONS
 set.seed(123)
 attach(iris_data)
 predictors = names(iris_data)[1:4]
