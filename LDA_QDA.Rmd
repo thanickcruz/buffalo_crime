@@ -1,0 +1,69 @@
+---
+title: "LDA and QDA"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(caret)
+library(MASS)
+Iris <- read.csv("bezedekIris.csv")
+View(Iris)
+attach(Iris)
+```
+
+```{r}
+set.seed(1)
+k = 10
+cv.error <- rep(0, k)
+splits <- createFolds(Class, returnTrain = FALSE)
+for(i in 1:k) {
+  #Split into train and test
+  test <- splits[[i]]
+  train <- -(test)
+  Iris.test <- Iris[test, ]
+  Class.test <- Class[test]
+  
+  #Train model
+  lda.fit <- lda(Class ~ ., data = Iris, subset = train)
+  
+  #Test model
+  lda.pred <- predict(lda.fit, Iris.test)
+  lda.class <- lda.pred$class
+  cv.error[i] <- mean(lda.class != Class.test)
+}
+cv.error
+mean(cv.error)
+
+lda.fit <- lda(Class ~ ., data = Iris)
+lda.fit
+```
+
+```{r}
+set.seed(1)
+k = 10
+cv.error <- rep(0, k)
+splits <- createFolds(Class, returnTrain = FALSE)
+for(i in 1:k) {
+  #Split into train and test
+  test <- splits[[i]]
+  train <- -(test)
+  Iris.test <- Iris[test, ]
+  Class.test <- Class[test]
+  
+  #Train model
+  qda.fit <- qda(Class ~ ., data = Iris, subset = train)
+  
+  #Test model
+  qda.pred <- predict(qda.fit, Iris.test)
+  qda.class <- qda.pred$class
+  cv.error[i] <- mean(qda.class != Class.test)
+}
+cv.error
+mean(cv.error)
+
+qda.fit <- qda(Class ~ ., data = Iris)
+qda.fit
+```
+
