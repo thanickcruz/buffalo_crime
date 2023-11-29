@@ -27,7 +27,7 @@ train_indices = sample(1:nrow(iris_data), 0.8 * nrow(iris_data))
 train_data=iris_data[train_indices, ]
 test_data=iris_data[-train_indices, ]
 predictors=names(train_data)[1:4]
-response="Iris.setosa"
+response="Class"
 accuracies=numeric()
 misclassification_rates=numeric()
 for (k_value in 1:10) {
@@ -48,7 +48,7 @@ plot(1:10, misclassification_rates, type = "b", xlab = "K", ylab = "Misclassific
 set.seed(123)
 attach(iris_data)
 predictors = names(iris_data)[1:4]
-response = "Iris.setosa"
+response = "Class"
 irirs_data_2 = iris_data[,c(predictors,response),drop=FALSE]
 k_folds = 10
 folds = createFolds(irirs_data_2$Iris.setosa,k=k_folds,list=TRUE,returnTrain = FALSE)
