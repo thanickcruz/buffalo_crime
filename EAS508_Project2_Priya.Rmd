@@ -22,7 +22,7 @@ library(caret)
 
 ```{r}
 #### FITTING A KNN CLASSIFIER MODEL FOR DIFFERENT VALUES OF K TO FIND THE BEST K WITH LEAST MISCLASSIFICATION RATE
-set.seed(123)
+set.seed(300)
 train_indices = sample(1:nrow(iris_data), 0.8 * nrow(iris_data))
 train_data=iris_data[train_indices, ]
 test_data=iris_data[-train_indices, ]
