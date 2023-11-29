@@ -1,0 +1,149 @@
+---
+title: "Untitled"
+author: "Nicholas Cruz"
+date: "2023-11-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### **Random Forest**
+
+```{r}
+install.packages(c('randomForest', 'caret'))
+```
+
+```{r}
+library(randomForest)
+library(caret)
+```
+
+```{r}
+Iris <- read.csv("bezedekIris.csv")
+View(Iris)
+attach(Iris)
+
+Iris$Class <- as.factor(Iris$Class)
+```
+
+**50 trees**
+
+```{r}
+set.seed(1)
+k=10
+mis.errors.50=rep(k)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
+
+for (i in 1:k){
+  # split into train/test
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
+  
+  # train model
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=50) 
+  
+  # predict on test and get error from confusion matrix
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
+  mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
+  
+  mis.errors.50[i]=mis.error
+}
+
+mean(mis.errors.50)
+```
+
+**100 trees**
+
+```{r}
+set.seed(1)
+k=10
+mis.errors.100=rep(k)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
+
+for (i in 1:k){
+  # split into train/test
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
+  
+  # train model
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=100) 
+  
+  # predict on test and get error from confusion matrix
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
+  mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
+  
+  mis.errors.100[i]=mis.error
+}
+
+mean(mis.errors.100)
+```
+
+**500 trees**
+
+```{r}
+set.seed(1)
+k=10
+mis.errors.500=rep(k)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
+
+for (i in 1:k){
+  # split into train/test
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
+  
+  # train model
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=500) 
+  
+  # predict on test and get error from confusion matrix
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
+  mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
+  
+  mis.errors.500[i]=mis.error
+}
+
+mean(mis.errors.500)
+```
+
+**1000 trees**
+
+```{r}
+set.seed(1)
+k=10
+mis.errors.1000=rep(k)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
+
+for (i in 1:k){
+  # split into train/test
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
+  
+  # train model
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=1000) 
+  
+  # predict on test and get error from confusion matrix
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
+  mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
+  
+  mis.errors.1000[i]=mis.error
+}
+
+mean(mis.errors.1000)
+```
+
+```{r}
+
+```
+
+```{r}
+ave.errors=c(mean(mis.errors.50),mean(mis.errors.100),mean(mis.errors.500),mean(mis.errors.1000))
+
+plot(c(50,100,500,1000),ave.errors, xlab = 'n trees', ylab='Average Error Rate', type='b')
+
+title('Amount of Trees vs Error Rate')
+```
