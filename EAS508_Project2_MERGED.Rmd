@@ -10,17 +10,27 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-install.packages(c('randomForest', 'caret', 'class'))
+install.packages(c('randomForest', 'caret', 'class','ggplot2'))
 
 library(class)
 library(caret)
 library(randomForest)
+library(ggplot2)
 library(MASS)
 
 # load data from CSV
 Iris <- read.csv("bezedekIris.csv")
 View(Iris)
 attach(Iris)
+```
+
+## Summary of Dataset
+
+We will be using the [Iris Dataset](https://archive.ics.uci.edu/dataset/53/iris), which contains various measurements of setosa, versicolor, and virginica flowers. The goal is to build a classification model predicting flower type that minimizes test misclassification rate.
+
+```{r}
+summary(Iris)
+pairs(Iris)
 ```
 
 ## LDA
@@ -136,9 +146,13 @@ print(average_missclassification)
 
 ## Random Forest
 
+We will
+
 ```{r}
 Iris$Class <- as.factor(Iris$Class)
 ```
+
+### 50 Trees
 
 ```{r}
 set.seed(1)
@@ -165,6 +179,8 @@ for (i in 1:k){
 mean(mis.errors.50)
 ```
 
+### 100 Trees
+
 ```{r}
 set.seed(1)
 k=10
@@ -189,6 +205,8 @@ for (i in 1:k){
 
 mean(mis.errors.100)
 ```
+
+### 500 Trees
 
 ```{r}
 set.seed(1)
@@ -215,6 +233,8 @@ for (i in 1:k){
 mean(mis.errors.500)
 ```
 
+### 1000 Trees
+
 ```{r}
 set.seed(1)
 k=10
@@ -240,10 +260,12 @@ for (i in 1:k){
 mean(mis.errors.1000)
 ```
 
+### Plot of Estimated Test Error Rates
+
 ```{r}
 ave.errors=c(mean(mis.errors.50),mean(mis.errors.100),mean(mis.errors.500),mean(mis.errors.1000))
 
-plot(c(50,100,500,1000),ave.errors, xlab = 'n trees', ylab='Average Error Rate', type='b')
+plot(c(50,100,500,1000),ave.errors, xlab = 'n trees', ylab='Estimated Test Error Rate', type='b')
 
-title('Amount of Trees vs Error Rate')
+title('Amount of Trees vs Test Error Rate')
 ```
