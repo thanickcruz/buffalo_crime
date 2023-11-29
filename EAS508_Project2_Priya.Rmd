@@ -51,7 +51,7 @@ predictors = names(iris_data)[1:4]
 response = "Class"
 irirs_data_2 = iris_data[,c(predictors,response),drop=FALSE]
 k_folds = 10
-folds = createFolds(irirs_data_2$Iris.setosa,k=k_folds,list=TRUE,returnTrain = FALSE)
+folds = createFolds(irirs_data_2$Class,k=k_folds,list=TRUE,returnTrain = FALSE)
 missclassification_rates = numeric()
 for (fold_ind in folds){
   fold = unlist(fold_ind)
