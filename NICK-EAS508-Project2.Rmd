@@ -21,8 +21,38 @@ library(caret)
 ```
 
 ```{r}
-attach(iris)
-iris
+Iris <- read.csv("bezedekIris.csv")
+View(Iris)
+attach(Iris)
+
+Iris$Class <- as.factor(Iris$Class)
+```
+
+**50 trees**
+
+```{r}
+set.seed(1)
+k=10
+mis.errors.50=rep(k)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
+
+for (i in 1:k){
+  # split into train/test
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
+  
+  # train model
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=50) 
+  
+  # predict on test and get error from confusion matrix
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
+  mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
+  
+  mis.errors.50[i]=mis.error
+}
+
+mean(mis.errors.50)
 ```
 
 **100 trees**
@@ -31,19 +61,19 @@ iris
 set.seed(1)
 k=10
 mis.errors.100=rep(k)
-iris.splits=createFolds(iris$Species, k = k, returnTrain = FALSE)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
 
 for (i in 1:k){
   # split into train/test
-  iris.test=iris[iris.splits[[i]],]
-  iris.train=iris[-iris.splits[[i]],]
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
   
   # train model
-  iris.rf = randomForest(Species ~ ., data=iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=100) 
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=100) 
   
   # predict on test and get error from confusion matrix
-  predictions=predict(iris.rf, iris.test)
-  rf.cm=table(predictions,iris.test$Species)
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
   mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
   
   mis.errors.100[i]=mis.error
@@ -58,19 +88,19 @@ mean(mis.errors.100)
 set.seed(1)
 k=10
 mis.errors.500=rep(k)
-iris.splits=createFolds(iris$Species, k = k, returnTrain = FALSE)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
 
 for (i in 1:k){
   # split into train/test
-  iris.test=iris[iris.splits[[i]],]
-  iris.train=iris[-iris.splits[[i]],]
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
   
   # train model
-  iris.rf = randomForest(Species ~ ., data=iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=500) 
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=500) 
   
   # predict on test and get error from confusion matrix
-  predictions=predict(iris.rf, iris.test)
-  rf.cm=table(predictions,iris.test$Species)
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
   mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
   
   mis.errors.500[i]=mis.error
@@ -85,23 +115,35 @@ mean(mis.errors.500)
 set.seed(1)
 k=10
 mis.errors.1000=rep(k)
-iris.splits=createFolds(iris$Species, k = k, returnTrain = FALSE)
+Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
 
 for (i in 1:k){
   # split into train/test
-  iris.test=iris[iris.splits[[i]],]
-  iris.train=iris[-iris.splits[[i]],]
+  Iris.test=Iris[Iris.splits[[i]],]
+  Iris.train=Iris[-Iris.splits[[i]],]
   
   # train model
-  iris.rf = randomForest(Species ~ ., data=iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=1000) 
+  rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=1000) 
   
   # predict on test and get error from confusion matrix
-  predictions=predict(iris.rf, iris.test)
-  rf.cm=table(predictions,iris.test$Species)
+  predictions=predict(rf.fit, Iris.test)
+  rf.cm=table(predictions,Iris.test$Class)
   mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
   
   mis.errors.1000[i]=mis.error
 }
 
 mean(mis.errors.1000)
+```
+
+```{r}
+
+```
+
+```{r}
+ave.errors=c(mean(mis.errors.50),mean(mis.errors.100),mean(mis.errors.500),mean(mis.errors.1000))
+
+plot(c(50,100,500,1000),ave.errors, xlab = 'n trees', ylab='Average Error Rate', type='b')
+
+title('Amount of Trees vs Error Rate')
 ```

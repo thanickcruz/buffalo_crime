@@ -24,5 +24,3 @@ lda.class <- lda.pred$class
 table(lda.class, Class.test)
 mean(lda.class != Class.test)
 ```
-
-
