@@ -11,7 +11,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 
 ```{r}
-iris_data = read.csv("bezdekIris.csv")
+iris_data = read.csv("bezedekIris.csv")
 View(iris_data)
 ```
 
@@ -27,7 +27,7 @@ train_indices = sample(1:nrow(iris_data), 0.8 * nrow(iris_data))
 train_data=iris_data[train_indices, ]
 test_data=iris_data[-train_indices, ]
 predictors=names(train_data)[1:4]
-response="Iris.setosa"
+response="Class"
 correct_classification=numeric()
 misclassification_rates=numeric()
 for (k_value in 1:10) {
@@ -49,10 +49,10 @@ plot(1:10, misclassification_rates, type = "b", xlab = "K",pch=16,col="red", yla
 set.seed(123)
 attach(iris_data)
 predictors = names(iris_data)[1:4]
-response = "Iris.setosa"
+response = "Class"
 irirs_data_2 = iris_data[,c(predictors,response),drop=FALSE]
 k_folds = 10
-folds = createFolds(irirs_data_2$Iris.setosa,k=k_folds,list=TRUE,returnTrain = FALSE)
+folds = createFolds(irirs_data_2$Class,k=k_folds,list=TRUE,returnTrain = FALSE)
 missclassification_rates = numeric()
 for (fold_ind in folds){
   fold = unlist(fold_ind)
