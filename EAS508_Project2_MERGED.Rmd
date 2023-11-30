@@ -108,8 +108,9 @@ qda.fit
 
 ## KNN
 
+FITTING A KNN CLASSIFIER MODEL FOR DIFFERENT VALUES OF K TO FIND THE BEST K WITH LEAST MISCLASSIFICATION RATE
+
 ```{r}
-#### FITTING A KNN CLASSIFIER MODEL FOR DIFFERENT VALUES OF K TO FIND THE BEST K WITH LEAST MISCLASSIFICATION RATE
 set.seed(300)
 train_indices = sample(1:nrow(Iris), 0.8 * nrow(Iris))
 train_data=Iris[train_indices, ]
@@ -124,16 +125,18 @@ for (k_value in 1:10) {
   correct_classification=sum(diag(confusion_matrix)) / sum(confusion_matrix)
   misclassification_rate=1 - correct_classification
   misclassification_rates=c(misclassification_rates, misclassification_rate)
-  print(k_value)
-  print(confusion_matrix)
+  sprintf("K = %s",k_value)
+  sprintf("The confusion matrix of K= %s is %s",k_value,confusion_matrix)
   }
-print(misclassification_rates)
-plot(1:10, misclassification_rates, type = "b", xlab = "K",pch=16,col="red", ylab = "Misclassification Rate", main = "Misclassification rate for k values")
-### After fitting the knn model on different k it is observed that 1,3,4,8,9,10 gives the minimum misclassification rate. So the knn model with k =3 can be choosen for further validation
+sprintf("The misclassification rate for different values of k is %s",paste(misclassification_rates,collapse = ","))
+plot(1:10, misclassification_rates, type = "b", xlab = "K",pch=16,col="red", ylab = "Misclassification Rate", main = "Misclassification rate for different k ")
 ```
 
+After fitting the KNN model for different values of k the best knn model for this data comes out to be k=4. So the model for further validation is a KNN model with k=4
+
+APPLYING 10 FOLD CROSS VALIDATION FOR TESTING THE MODEL PREDICTIONS
+
 ```{r}
-### APPLYING 10 FOLD CROSS VALIDATION FOR TESTING THE MODEL PREDICTIONS
 set.seed(123)
 predictors = names(Iris)[1:4]
 response = "Class"
@@ -151,12 +154,14 @@ for (fold_ind in folds){
   missclassification_rate = 1-correct_classification
   missclassification_rates = c(missclassification_rates,missclassification_rate)
 }
-print(missclassification_rates)
+sprintf("The misclassification rate for k folds are: %s",paste(missclassification_rates,collapse = ","))
 plot(1:10, missclassification_rates, type = "b",pch =16,col="red", xlab = "K", ylab = "Misclassification Rate", main = "Misclassification rate for k folds")
 average_missclassification = mean(missclassification_rates)
-print(average_missclassification)
-### After applying the k fold cross validation the average misclassification rate shows up to be 0.04
+sprintf("The average misclassification rate after validation is %s",average_missclassification)
+
 ```
+
+After the cross validation for the knn model with k =4 , the average misclassification rate comes out to be 0.04 i.e 4%
 
 ## Random Forest
 
