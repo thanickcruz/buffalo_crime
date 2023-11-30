@@ -273,7 +273,7 @@ for (i in 1:k){
 mean(mis.errors.1000)
 ```
 
-### Plot of Estimated Test Error Rates
+### Plot of Estimated Test Error Rates (ntree=50,100,500,1000)
 
 ```{r}
 ave.errors=c(mean(mis.errors.50),mean(mis.errors.100),mean(mis.errors.500),mean(mis.errors.1000))
@@ -283,15 +283,16 @@ plot(c(50,100,500,1000),ave.errors, xlab = 'n trees', ylab='Estimated Test Error
 title('Amount of Trees vs Test Error Rate')
 ```
 
-After validating Random Forest models with 50, 100, 500, and 1000 trees, we found that [500 trees minimizes the estimated test error rate at 4%]{.underline}. However, these values were arbitrarily chosen, so lower error rates may occur between these values. In this report, we have chosen to further investigate every model between 1 and 100 trees.
+After validating Random Forest models with 50, 100, 500, and 1000 trees, we found that [500 trees minimizes the estimated test error rate at 4%]{.underline}. However, these values were arbitrarily chosen, so lower error rates may occur between these values. I have chosen to further investigate every model between 1 and 100 trees.
 
 ```{r}
 set.seed(1)
 ntree.max=100
 k=10
 
-n.errors=rep(ntree.max)
+n.errors=rep(ntree.max) # store avg error for each model
 
+# cross-validate each model with increasing ntree
 for (n in 1:ntree.max){
   k.errors=rep(k)
   Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
@@ -313,8 +314,6 @@ for (n in 1:ntree.max){
   }
   n.errors[n]=mean(k.errors)
 }
-
-n.errors
 ```
 
 ```{r}
@@ -325,3 +324,15 @@ title('Amount of Trees vs Test Error Rate')
 ```
 
 ## Conclusion
+
+The estimated test misclassification error rates for each model were:
+
+[**LDA - 2%**]{.underline}
+
+[**QDA - 2%**]{.underline}
+
+**KNN - 4%**
+
+**Random Forest - 3%**
+
+While every model performed well, the LDA and QDA models had the smallest error rates, 2%. The classes were easily separable (plotted below), meaning a linear function was sufficient for effective decision boundaries. This also explains why KNN did not perform as well, since KNN tends to dominate LDA when the decision boundary is highly non-linear. We suspect that Random Forest did not perform nearly as well since the dataset had both a small amount of predictors and observations. This resulted in fluctuating error depending on amount of trees used and predictors randomly chosen.
