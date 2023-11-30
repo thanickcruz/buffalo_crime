@@ -1,6 +1,6 @@
 ---
-title: "EAS508 Project 2 MERGED"
-author: "Nicholas Cruz"
+title: "EAS508 Project 2"
+author: "Nicholas Cruz, Sean Grzenda, Priya Patil"
 date: "2023-11-29"
 output: html_document
 ---
@@ -336,3 +336,29 @@ The estimated test misclassification error rates for each model were:
 **Random Forest - 3%**
 
 While every model performed well, the LDA and QDA models had the smallest error rates, 2%. The classes were easily separable (plotted below), meaning a linear function was sufficient for effective decision boundaries. This also explains why KNN did not perform as well, since KNN tends to dominate LDA when the decision boundary is highly non-linear. We suspect that Random Forest did not perform nearly as well since the dataset had both a small amount of predictors and observations. This resulted in fluctuating error depending on amount of trees used and predictors randomly chosen.
+
+2 Dimensional Scatter Plots based on the classes they belong to.
+
+```{r}
+ggplot(data = iris,aes(x=Sepal.Length,y=Sepal.Width,col=Class))+geom_point()
+```
+
+```{r}
+ggplot(data = iris,aes(x=Sepal.Width,y=Petal.Length,col=Class))+geom_point()
+```
+
+```{r}
+ggplot(data = iris,aes(x=Petal.Width,y=Petal.Length,col=Class))+geom_point()
+```
+
+```{r}
+ggplot(data = iris,aes(x=Petal.Width,y=Sepal.Length,col=Class))+geom_point()
+```
+
+```{r}
+ggplot(data = iris,aes(x=Petal.Length,y=Sepal.Length,col=Class))+geom_point()
+```
+
+```{r}
+ggplot(data = iris,aes(x=Petal.Width,y=Sepal.Width,col=Class))+geom_point()
+```
