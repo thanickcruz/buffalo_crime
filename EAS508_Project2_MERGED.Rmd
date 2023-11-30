@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-install.packages(c('randomForest', 'caret', 'class'))
+#install.packages(c('randomForest', 'caret', 'class'))
 
 library(class)
 library(caret)
@@ -19,7 +19,6 @@ library(MASS)
 
 # load data from CSV
 Iris <- read.csv("bezedekIris.csv")
-iris_data <- Iris
 View(Iris)
 attach(Iris)
 ```
@@ -87,9 +86,9 @@ qda.fit
 ```{r}
 #### FITTING A KNN CLASSIFIER MODEL FOR DIFFERENT VALUES OF K TO FIND THE BEST K WITH LEAST MISCLASSIFICATION RATE
 set.seed(300)
-train_indices = sample(1:nrow(iris_data), 0.8 * nrow(iris_data))
-train_data=iris_data[train_indices, ]
-test_data=iris_data[-train_indices, ]
+train_indices = sample(1:nrow(Iris), 0.8 * nrow(Iris))
+train_data=Iris[train_indices, ]
+test_data=Iris[-train_indices, ]
 predictors=names(train_data)[1:4]
 response="Class"
 correct_classification=numeric()
@@ -111,10 +110,9 @@ plot(1:10, misclassification_rates, type = "b", xlab = "K",pch=16,col="red", yla
 ```{r}
 ### APPLYING 10 FOLD CROSS VALIDATION FOR TESTING THE MODEL PREDICTIONS
 set.seed(123)
-attach(iris_data)
-predictors = names(iris_data)[1:4]
+predictors = names(Iris)[1:4]
 response = "Class"
-irirs_data_2 = iris_data[,c(predictors,response),drop=FALSE]
+irirs_data_2 = Iris[,c(predictors,response),drop=FALSE]
 k_folds = 10
 folds = createFolds(irirs_data_2$Class,k=k_folds,list=TRUE,returnTrain = FALSE)
 missclassification_rates = numeric()
