@@ -20,7 +20,7 @@ library(MASS)
 
 # load data from CSV
 Iris <- read.csv("bezedekIris.csv")
-View(Iris)
+head(Iris)
 attach(Iris)
 
 Iris$Class <- as.factor(Iris$Class) # for handling qualitative response
@@ -50,9 +50,7 @@ cor(subset(Iris, select = -c(Class)))
 
 ## LDA
 
-The cross validation error from LDA is 0.02. Two linear discriminants are provided: 
-$0.829*Sepal.Length + 1.53*Sepal.width - 2.20*Petal.Length - 2.81*Petal.Width$ and 
-$-0.0241*Sepal.Length - 2.16*Sepal.width + 0.931*Petal.Length - 2.83*Petal.Width$
+The cross validation error from LDA is 0.02. Two linear discriminants are provided: $0.829*Sepal.Length + 1.53*Sepal.width - 2.20*Petal.Length - 2.81*Petal.Width$ and $-0.0241*Sepal.Length - 2.16*Sepal.width + 0.931*Petal.Length - 2.83*Petal.Width$
 
 ```{r}
 set.seed(1)
