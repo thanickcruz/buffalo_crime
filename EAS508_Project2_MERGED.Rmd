@@ -1,6 +1,6 @@
 ---
-title: "EAS508 Project 2 MERGED"
-author: "Nicholas Cruz"
+title: "EAS508 Project 2"
+author: "Nicholas Cruz, Sean Grzenda, Priya Patil"
 date: "2023-11-29"
 output: html_document
 ---
