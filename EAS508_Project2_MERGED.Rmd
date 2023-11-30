@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-install.packages(c('randomForest', 'caret', 'class','ggplot2'))
+#install.packages(c('randomForest', 'caret', 'class','ggplot2'))
 
 library(class)
 library(caret)
@@ -60,6 +60,11 @@ mean(cv.error)
 
 lda.fit <- lda(Class ~ ., data = Iris)
 lda.fit
+```
+
+```{r}
+lda.pred <- predict(lda.fit)
+ldahist(lda.pred$x[, 1], g = Class)
 ```
 
 ## QDA
