@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-install.packages(c('randomForest', 'caret', 'class','ggplot2'))
+#install.packages(c('randomForest', 'caret', 'class','ggplot2'))
 
 library(class)
 library(caret)
@@ -283,7 +283,9 @@ plot(c(50,100,500,1000),ave.errors, xlab = 'n trees', ylab='Estimated Test Error
 title('Amount of Trees vs Test Error Rate')
 ```
 
-After validating Random Forest models with 50, 100, 500, and 1000 trees, we found that [500 trees minimizes the estimated test error rate at 4%]{.underline}. However, these values were arbitrarily chosen, so lower error rates may occur between these values. I have chosen to further investigate every model between 1 and 100 trees.
+### 1-100 Trees and Plot
+
+After validating Random Forest models with 50, 100, 500, and 1000 trees, we found that 500 trees minimizes the estimated test error rate at 4%. However, these values were arbitrarily chosen, so lower error rates may occur between these values. I have chosen to further investigate every model between 1 and 100 trees.
 
 ```{r}
 set.seed(1)
@@ -317,11 +319,16 @@ for (n in 1:ntree.max){
 ```
 
 ```{r}
-error.min=which.min(n.errors)
+error.min=min(n.errors)
+error.min.index=which.min(n.errors)
 error.min
+error.min.index
+
 plot(seq(1:ntree.max),n.errors, xlab = 'n trees', ylab='Estimated Test Error Rate', type='l')
 title('Amount of Trees vs Test Error Rate')
 ```
+
+Interestingly, the new minimum error rate is [3.33% when ntree=3]{.underline}.
 
 ## Conclusion
 
