@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+
 #install.packages(c('randomForest', 'caret', 'class','ggplot2'))
 
 library(class)
@@ -112,23 +113,31 @@ FITTING A KNN CLASSIFIER MODEL FOR DIFFERENT VALUES OF K TO FIND THE BEST K WITH
 
 ```{r}
 set.seed(300)
+##Divide the dataset randomly into train and test
 train_indices = sample(1:nrow(Iris), 0.8 * nrow(Iris))
 train_data=Iris[train_indices, ]
 test_data=Iris[-train_indices, ]
+
+## Choose the predictors and the response from the dataframe
 predictors=names(train_data)[1:4]
 response="Class"
 correct_classification=numeric()
 misclassification_rates=numeric()
+
+## Fit the knn model on different values of k from 1 to 10
 for (k_value in 1:10) {
   knn_predictions=knn(train = train_data[, predictors], test = test_data[, predictors], cl = train_data[, response], k = k_value)
   confusion_matrix=table(Actual = test_data[, response], Predicted = knn_predictions)
+  ##Calculate the error using confusion matrix
   correct_classification=sum(diag(confusion_matrix)) / sum(confusion_matrix)
   misclassification_rate=1 - correct_classification
   misclassification_rates=c(misclassification_rates, misclassification_rate)
   sprintf("K = %s",k_value)
   sprintf("The confusion matrix of K= %s is %s",k_value,confusion_matrix)
   }
+
 sprintf("The misclassification rate for different values of k is %s",paste(misclassification_rates,collapse = ","))
+
 plot(1:10, misclassification_rates, type = "b", xlab = "K",pch=16,col="red", ylab = "Misclassification Rate", main = "Misclassification rate for different k ")
 ```
 
@@ -138,30 +147,41 @@ APPLYING 10 FOLD CROSS VALIDATION FOR TESTING THE MODEL PREDICTIONS
 
 ```{r}
 set.seed(123)
+##Choose the predictors and response from the dataset
 predictors = names(Iris)[1:4]
 response = "Class"
 irirs_data_2 = Iris[,c(predictors,response),drop=FALSE]
+
 k_folds = 10
+##Create folds for the validation process
 folds = createFolds(irirs_data_2$Class,k=k_folds,list=TRUE,returnTrain = FALSE)
 missclassification_rates = numeric()
+
 for (fold_ind in folds){
   fold = unlist(fold_ind)
+  ##Divide the dataset to train and test based on folds
   train_data = irirs_data_2[-fold,]
   test_data = irirs_data_2[fold,]
+  ##Fit the knn model
   knn_predictions = knn(train = train_data[,predictors],test=test_data[,predictors],cl=train_data[,response],k=3)
   confusion_matrix = table(Actual=test_data[,response],Predicted=knn_predictions)
+  ##Calculate error using the confusion matrix
   correct_classification = sum(diag(confusion_matrix))/sum(confusion_matrix)
   missclassification_rate = 1-correct_classification
   missclassification_rates = c(missclassification_rates,missclassification_rate)
 }
+
 sprintf("The misclassification rate for k folds are: %s",paste(missclassification_rates,collapse = ","))
+
 plot(1:10, missclassification_rates, type = "b",pch =16,col="red", xlab = "K", ylab = "Misclassification Rate", main = "Misclassification rate for k folds")
+
+###Calculate the mean error rate
 average_missclassification = mean(missclassification_rates)
 sprintf("The average misclassification rate after validation is %s",average_missclassification)
 
 ```
 
-After the cross validation for the knn model with k =4 , the average misclassification rate comes out to be 0.04 i.e 4%
+After the cross validation for the knn model with k =4 , the average misclassification rate comes out to be 0.04 i.e 4%.
 
 ## Random Forest
 
