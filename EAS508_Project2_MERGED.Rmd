@@ -114,8 +114,9 @@ qda.fit
 
 ## KNN
 
+FITTING A KNN CLASSIFIER MODEL FOR DIFFERENT VALUES OF K TO FIND THE BEST K WITH LEAST MISCLASSIFICATION RATE
+
 ```{r}
-#### FITTING A KNN CLASSIFIER MODEL FOR DIFFERENT VALUES OF K TO FIND THE BEST K WITH LEAST MISCLASSIFICATION RATE
 set.seed(300)
 train_indices = sample(1:nrow(Iris), 0.8 * nrow(Iris))
 train_data=Iris[train_indices, ]
@@ -130,16 +131,18 @@ for (k_value in 1:10) {
   correct_classification=sum(diag(confusion_matrix)) / sum(confusion_matrix)
   misclassification_rate=1 - correct_classification
   misclassification_rates=c(misclassification_rates, misclassification_rate)
-  print(k_value)
-  print(confusion_matrix)
+  sprintf("K = %s",k_value)
+  sprintf("The confusion matrix of K= %s is %s",k_value,confusion_matrix)
   }
-print(misclassification_rates)
-plot(1:10, misclassification_rates, type = "b", xlab = "K",pch=16,col="red", ylab = "Misclassification Rate", main = "Misclassification rate for k values")
-### After fitting the knn model on different k it is observed that 1,3,4,8,9,10 gives the minimum misclassification rate. So the knn model with k =3 can be choosen for further validation
+sprintf("The misclassification rate for different values of k is %s",paste(misclassification_rates,collapse = ","))
+plot(1:10, misclassification_rates, type = "b", xlab = "K",pch=16,col="red", ylab = "Misclassification Rate", main = "Misclassification rate for different k ")
 ```
 
+After fitting the KNN model for different values of k the best knn model for this data comes out to be k=4. So the model for further validation is a KNN model with k=4
+
+APPLYING 10 FOLD CROSS VALIDATION FOR TESTING THE MODEL PREDICTIONS
+
 ```{r}
-### APPLYING 10 FOLD CROSS VALIDATION FOR TESTING THE MODEL PREDICTIONS
 set.seed(123)
 predictors = names(Iris)[1:4]
 response = "Class"
@@ -157,12 +160,14 @@ for (fold_ind in folds){
   missclassification_rate = 1-correct_classification
   missclassification_rates = c(missclassification_rates,missclassification_rate)
 }
-print(missclassification_rates)
+sprintf("The misclassification rate for k folds are: %s",paste(missclassification_rates,collapse = ","))
 plot(1:10, missclassification_rates, type = "b",pch =16,col="red", xlab = "K", ylab = "Misclassification Rate", main = "Misclassification rate for k folds")
 average_missclassification = mean(missclassification_rates)
-print(average_missclassification)
-### After applying the k fold cross validation the average misclassification rate shows up to be 0.04
+sprintf("The average misclassification rate after validation is %s",average_missclassification)
+
 ```
+
+After the cross validation for the knn model with k =4 , the average misclassification rate comes out to be 0.04 i.e 4%
 
 ## Random Forest
 
@@ -284,6 +289,45 @@ plot(c(50,100,500,1000),ave.errors, xlab = 'n trees', ylab='Estimated Test Error
 title('Amount of Trees vs Test Error Rate')
 ```
 
-After validating Random Forest models with 50, 100, 500, and 1000 trees, we found that [500 trees minimizes the estimated test error rate at 4%]{.underline}.
+After validating Random Forest models with 50, 100, 500, and 1000 trees, we found that [500 trees minimizes the estimated test error rate at 4%]{.underline}. However, these values were arbitrarily chosen, so lower error rates may occur between these values. In this report, we have chosen to further investigate every model between 1 and 100 trees.
+
+```{r}
+set.seed(1)
+ntree.max=100
+k=10
+
+n.errors=rep(ntree.max)
+
+for (n in 1:ntree.max){
+  k.errors=rep(k)
+  Iris.splits=createFolds(Iris$Class, k = k, returnTrain = FALSE)
+  
+  for (i in 1:k){
+    # split into train/test
+    Iris.test=Iris[Iris.splits[[i]],]
+    Iris.train=Iris[-Iris.splits[[i]],]
+    
+    # train model
+    rf.fit = randomForest(Iris.train$Class ~ ., data=Iris.train, type='classification',importance=TRUE, proximity=TRUE, ntree=n) 
+    
+    # predict on test and get error from confusion matrix
+    predictions=predict(rf.fit, Iris.test)
+    rf.cm=table(predictions,Iris.test$Class)
+    mis.error=1-sum(diag(rf.cm))/sum(rf.cm)
+    
+    k.errors[i]=mis.error
+  }
+  n.errors[n]=mean(k.errors)
+}
+
+n.errors
+```
+
+```{r}
+error.min=which.min(n.errors)
+error.min
+plot(seq(1:ntree.max),n.errors, xlab = 'n trees', ylab='Estimated Test Error Rate', type='l')
+title('Amount of Trees vs Test Error Rate')
+```
 
 ## Conclusion
