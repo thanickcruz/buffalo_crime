@@ -10,7 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-
 #install.packages(c('randomForest', 'caret', 'class','ggplot2'))
 
 library(class)
