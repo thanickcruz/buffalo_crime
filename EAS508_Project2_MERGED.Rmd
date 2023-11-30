@@ -23,15 +23,30 @@ Iris <- read.csv("bezedekIris.csv")
 iris_data <- Iris
 View(Iris)
 attach(Iris)
+
+Iris$Class <- as.factor(Iris$Class) # for handling qualitative response
 ```
 
 ## Summary of Dataset
 
-We will be using the [Iris Dataset](https://archive.ics.uci.edu/dataset/53/iris), which contains various measurements of setosa, versicolor, and virginica flowers. The goal is to build a classification model predicting flower type that minimizes test misclassification rate.
+We will be using the [Iris Dataset](https://archive.ics.uci.edu/dataset/53/iris), which contains various measurements of setosa, versicolor, and virginica flowers. The goal is to build a classification model predicting flower class that minimizes test misclassification rate. For each model (LDA, QDA, KNN, and Random Forest), we will tune hyperparameters where appropriate and estimate test error using 10-fold CV.
+
+**Description**
 
 ```{r}
 summary(Iris)
+```
+
+**Scatterplots**
+
+```{r}
 pairs(Iris)
+```
+
+**Correlation Matrix**
+
+```{r}
+cor(subset(Iris, select = -c(Class)))
 ```
 
 ## LDA
@@ -146,12 +161,6 @@ print(average_missclassification)
 ```
 
 ## Random Forest
-
-We will
-
-```{r}
-Iris$Class <- as.factor(Iris$Class)
-```
 
 ### 50 Trees
 
@@ -270,3 +279,7 @@ plot(c(50,100,500,1000),ave.errors, xlab = 'n trees', ylab='Estimated Test Error
 
 title('Amount of Trees vs Test Error Rate')
 ```
+
+After validating Random Forest models with 50, 100, 500, and 1000 trees, we found that [500 trees minimizes the estimated test error rate at 4%]{.underline}.
+
+## Conclusion
